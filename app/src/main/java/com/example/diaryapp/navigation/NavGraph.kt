@@ -1,15 +1,7 @@
 package com.example.diaryapp.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -20,13 +12,9 @@ import androidx.navigation.navArgument
 import com.example.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.example.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import com.example.diaryapp.presentation.screens.home.HomeScreen
-import com.example.diaryapp.util.Constants.APP_ID
 import com.example.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
-import io.realm.kotlin.mongodb.App
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun SetupNavGraph(
@@ -38,7 +26,9 @@ fun SetupNavGraph(
             navHostController.popBackStack()
             navHostController.navigate(Screen.Home.route)
         })
-        homeRoute()
+        homeRoute(navigateToWrite = {
+            navHostController.navigate(Screen.Write.route)
+        })
         writeRoute()
     }
 }
@@ -84,9 +74,11 @@ fun NavGraphBuilder.authenticationRoute(
     }
 }
 
-fun NavGraphBuilder.homeRoute() {
+fun NavGraphBuilder.homeRoute(
+    navigateToWrite:()-> Unit
+) {
     composable(route = Screen.Home.route) {
-       HomeScreen()
+       HomeScreen(onMenuClicked = {}, navigateToWrite = navigateToWrite)
     }
 }
 
