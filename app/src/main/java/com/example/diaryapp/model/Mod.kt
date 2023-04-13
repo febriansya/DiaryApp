@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.example.diaryapp.R
 import com.example.diaryapp.ui.theme.*
 
-enum class Mod(
+enum class Mood(
     val icon: Int,
     val contentColor: Color,
     val containerColor: Color
@@ -90,5 +90,4 @@ enum class Mod(
         contentColor = Color.Black,
         containerColor = TenseColor
     )
-
 }
