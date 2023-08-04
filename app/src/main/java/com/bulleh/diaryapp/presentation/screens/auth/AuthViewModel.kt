@@ -39,6 +39,7 @@ class AuthViewModel : ViewModel() {
                         onSuccess()
                         delay(600)
                         authenticated.value = true
+
                     } else {
                         onError(Exception("User is not logged in."))
                     }
