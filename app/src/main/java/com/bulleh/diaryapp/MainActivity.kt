@@ -22,7 +22,9 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 val navController = rememberNavController()
                 SetupNavGraph(
-                    startDestination = getStartDestination(), navController = navController
+                    startDestination = getStartDestination(), navController = navController, onDataLoaded = {
+
+                    }
                 )
             }
         }
