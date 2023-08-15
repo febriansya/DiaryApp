@@ -13,7 +13,7 @@ class Diary : RealmObject {
     var ownerId: String = ""
     var mood: String = Mood.Neutral.name
     var title: String = ""
-    val description: String = ""
+    var description: String = ""
     var images: RealmList<String> = realmListOf()
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 }
