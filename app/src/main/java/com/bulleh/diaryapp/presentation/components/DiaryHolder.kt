@@ -1,79 +1,112 @@
 package com.bulleh.diaryapp.presentation.components
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
+import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.Mood
+import com.bulleh.diaryapp.ui.theme.Elevation
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
-fun DateHeader(
-    localDate: LocalDate
+fun DiaryHolder(
+    diary: Diary,
+    onClick: (String) -> Unit
 ) {
-    /*
-    * this class for template header diary holder
-    * */
+    var componentHeight by remember {
+        mutableStateOf(0.dp)
+    }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = String.format("%02d", localDate.dayOfMonth),
-                style = TextStyle(
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    fontWeight = FontWeight.Light
-                ),
+    Row(modifier = Modifier
+        .clickable(
+            indication = null,
+            interactionSource = remember {
+                MutableInteractionSource()
+            }
+        ) { onClick(diary._id.toString()) }) {
 
-            )
-
-            Text(
-                text = localDate.dayOfWeek.toString().take(3),
-                style = TextStyle(
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    fontWeight = FontWeight.Light
-                )
-            )
-        }
         Spacer(modifier = Modifier.width(14.dp))
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            Text(
-                text = localDate.month.toString().lowercase()
-                    .replaceFirstChar {
-                        it.titlecase()
-                    },
-                style = TextStyle(
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    fontWeight = FontWeight.Light
-                )
-            )
-
-            Text(
-                text = "${localDate.year}",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                style = TextStyle(
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                    fontWeight = FontWeight.Light
-                )
-            )
-        }
-
+        Surface(
+            modifier = Modifier
+                .width(14.dp)
+                .height(14.dp),
+            tonalElevation = Elevation.Level1
+        ) {}
+        Spacer(modifier = Modifier.width(20.dp))
     }
 }
 
-@Preview
 @Composable
-fun DateHeaderPreview() {
-    DateHeader(localDate = LocalDate.now())
+fun DiaryHeader(moodName: String, time: Instant) {
+
+    /*
+    *
+    * header body
+    * */
+
+    val mood by remember {
+        mutableStateOf(Mood.valueOf(moodName))
+    }
+    val formatter = remember {
+        DateTimeFormatter.ofPattern("hh:mm:a", Locale.getDefault()).withZone(
+            ZoneId.systemDefault()
+        )
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Mood.valueOf(moodName).containerColor)
+            .padding(horizontal = 14.dp, vertical = 7.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier.size(18.dp),
+                painter = painterResource(id = Mood.valueOf(moodName).icon),
+                contentDescription = "Mood Icon"
+            )
+            Spacer(modifier = Modifier.width(7.dp))
+            Text(
+                text = Mood.valueOf(moodName).name,
+                color = Mood.valueOf(moodName).contentColor,
+                style = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+            )
+        }
+
+        Text(
+            text = formatter.format(time),
+            color = mood.containerColor,
+            style = TextStyle(fontSize = MaterialTheme.typography.bodyMedium.fontSize)
+        )
+    }
 }
