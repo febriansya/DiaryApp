@@ -1,7 +1,6 @@
 package com.bulleh.diaryapp.presentation.components
 
-import android.graphics.fonts.FontStyle
-import android.icu.util.LocaleData
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +38,8 @@ import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.ui.theme.Elevation
 import com.bulleh.diaryapp.util.toInstant
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -51,11 +53,10 @@ fun DiaryHolder(
     /*
     * local densitiy to mark height  as current
     * */
-    val localDensity = LocalDensity.current
 
-    var componentHeight by remember {
-        mutableStateOf(0.dp)
-    }
+    val localDensity = LocalDensity.current
+    var componentHeight by remember { mutableStateOf(0.dp) }
+    var galleryOpened by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.clickable(indication = null, interactionSource = remember {
         MutableInteractionSource()
@@ -95,6 +96,16 @@ fun DiaryHolder(
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis
                 )
+                if (diary.images.isNotEmpty()) {
+                    ShowGalleryButton(galleryOpened = galleryOpened, onClick = {
+                        galleryOpened = !galleryOpened
+                    })
+                }
+                AnimatedVisibility(visible = galleryOpened) {
+                    Column(modifier = Modifier.padding(all = 14.dp)) {
+                        Gallery(images = diary.images)
+                    }
+                }
             }
         }
     }
@@ -112,8 +123,7 @@ fun DiaryHeader(moodName: String, time: Instant) {
         mutableStateOf(Mood.valueOf(moodName))
     }
     val formatter = remember {
-        DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
-            .withZone(ZoneId.systemDefault())
+        DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault()).withZone(ZoneId.systemDefault())
     }
 
     Row(
@@ -149,12 +159,27 @@ fun DiaryHeader(moodName: String, time: Instant) {
 }
 
 
+@Composable
+fun ShowGalleryButton(
+    galleryOpened: Boolean, onClick: () -> Unit
+) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = if (galleryOpened) "Hide Gallery " else "Show Gallery", style = TextStyle(
+                fontSize = MaterialTheme.typography.bodySmall.fontSize
+            )
+        )
+    }
+}
+
+
 @Preview
 @Composable
 fun DiaryHolderPreviewItem() {
     DiaryHolder(diary = Diary().apply {
         title = "Dear Recruiter"
         description = "lorem ipsum bla bla aefaeaef aefaefaefvarbbav arafaeflaekfajef aefpajefohae"
-        mood = Mood.Happy.name
+        mood = Mood.Angry.name
+        images = realmListOf("", "")
     }, onClick = {})
 }
