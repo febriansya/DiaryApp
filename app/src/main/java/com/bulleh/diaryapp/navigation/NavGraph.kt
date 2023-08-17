@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,11 +17,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bulleh.diaryapp.data.repository.MongoDB
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
 import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.bulleh.diaryapp.presentation.screens.home.HomeScreen
+import com.bulleh.diaryapp.presentation.screens.home.HomeViewModel
 import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
@@ -36,9 +35,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun SetupNavGraph(
-    startDestination: String,
-    navController: NavHostController,
-    onDataLoaded: () -> Unit
+    startDestination: String, navController: NavHostController, onDataLoaded: () -> Unit
 ) {
     NavHost(
         startDestination = startDestination, navController = navController
@@ -52,42 +49,33 @@ fun SetupNavGraph(
             navigateToHome = {
                 navController.popBackStack()
                 navController.navigate(Screen.Home.route)
-            },
-            onDataLoaded = onDataLoaded
+            }, onDataLoaded = onDataLoaded
         )
 
         /*
         * this code for home route
         * */
-        homeRoute(
-            navigateToWrite = {
-                navController.navigate(Screen.Write.route)
-            },
-            navigateToAuth = {
-                navController.popBackStack()
-                navController.navigate(Screen.Authentication.route)
-            },
-            onDataLoaded = onDataLoaded,
-            navigateToWriteArgs = {
-                navController.navigate(Screen.Write.passDiaryId(diaryId = it))
-            }
-        )
+        homeRoute(navigateToWrite = {
+            navController.navigate(Screen.Write.route)
+        }, navigateToAuth = {
+            navController.popBackStack()
+            navController.navigate(Screen.Authentication.route)
+        }, onDataLoaded = onDataLoaded, navigateToWriteArgs = {
+            navController.navigate(Screen.Write.passDiaryId(diaryId = it))
+        })
 
         /*
         * this code for write route
         * */
-        writeRoute(
-            navigateBack = {
-                navController.popBackStack()
-            }
-        )
+        writeRoute(navigateBack = {
+            navController.popBackStack()
+        })
 
     }
 }
 
 fun NavGraphBuilder.authenticationRoute(
-    navigateToHome: () -> Unit,
-    onDataLoaded: () -> Unit
+    navigateToHome: () -> Unit, onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Authentication.route) {
         val viewModel: AuthViewModel = viewModel()
@@ -135,6 +123,9 @@ fun NavGraphBuilder.homeRoute(
     composable(
         route = Screen.Home.route
     ) {
+        val viewModel: HomeViewModel = viewModel()
+        val diaries by viewModel.diaries
+
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
         var signOutDialogOpened by remember { mutableStateOf(false) }
@@ -142,24 +133,22 @@ fun NavGraphBuilder.homeRoute(
 
 
         HomeScreen(
+            diaries = diaries,
             drawerState = drawerState,
             onSignOutClicked = {
                 signOutDialogOpened = true
-            },
-            oneMenuClicked = {
+            }, oneMenuClicked = {
                 scope.launch {
                     drawerState.open()
                 }
-            },
-            navigateToWrite = navigateToWrite
+            }, navigateToWrite = navigateToWrite
         )
 
-        LaunchedEffect(key1 = Unit) {
-            MongoDB.configureTheRealm()
-        }
+//        LaunchedEffect(key1 = Unit) {
+//            MongoDB.configureTheRealm()
+//        }
 
-        DisplayAlertDialog(
-            title = "Sign Out",
+        DisplayAlertDialog(title = "Sign Out",
             message = "Are you sure you want to Sign Out from your Google Account?",
             dialogOpen = signOutDialogOpened,
             onDialogClosed = { signOutDialogOpened = false },
@@ -173,8 +162,7 @@ fun NavGraphBuilder.homeRoute(
                         }
                     }
                 }
-            }
-        )
+            })
     }
 }
 
@@ -189,9 +177,7 @@ fun NavGraphBuilder.writeRoute(
             defaultValue = null
         })
     ) {
-
         WriteScreen()
-
     }
 }
 
