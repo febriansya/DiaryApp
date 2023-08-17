@@ -52,8 +52,6 @@ fun HomeScreen(
             /*
             * put content home here
             * */
-
-
         })
     }
 }

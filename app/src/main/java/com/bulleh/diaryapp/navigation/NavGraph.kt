@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.bulleh.diaryapp.data.repository.MongoDB
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
 import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
@@ -151,6 +153,10 @@ fun NavGraphBuilder.homeRoute(
             },
             navigateToWrite = navigateToWrite
         )
+
+        LaunchedEffect(key1 = Unit) {
+            MongoDB.configureTheRealm()
+        }
 
         DisplayAlertDialog(
             title = "Sign Out",
