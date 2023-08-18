@@ -1,6 +1,9 @@
+@file:Suppress("DEPRECATION")
+
 package com.bulleh.diaryapp.data.repository
 
-import android.util.Log
+import android.security.keystore.UserNotAuthenticatedException
+import android.widget.Toast
 import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.RequestState
@@ -30,7 +33,7 @@ object MongoDB : MongoRepository {
             val config = SyncConfiguration.Builder(user, setOf(Diary::class))
                 .initialSubscriptions { sub ->
                     add(
-                        query = sub.query<Diary>("ownerId == $0", user.id),
+                        query = sub.query<Diary>(query = "ownerId == $0", user.id),
                         name = "User's Diaries"
                     )
                 }
@@ -58,13 +61,11 @@ object MongoDB : MongoRepository {
             } catch (e: Exception) {
                 flow { emit(RequestState.Error(e)) }
             }
-
         } else {
-            flow {
-                emit(RequestState.Error(UserNoteAuthenticatedException()))
-            }
+            flow { emit(RequestState.Error(UserNotAuthenticatedException())) }
         }
     }
 }
+
 
 private class UserNoteAuthenticatedException : Exception("User is not Logged in.")

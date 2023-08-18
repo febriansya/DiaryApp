@@ -54,10 +54,7 @@ fun HomeScreen(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        }, content = {
-            /*
-            * put content home here
-            * */
+        }) {
             when (diaries) {
                 is RequestState.Success -> {
                     HomeContent(
@@ -65,6 +62,7 @@ fun HomeScreen(
                         diariesNotes = diaries.data,
                         onClick = {}
                     )
+
                 }
 
                 is RequestState.Error -> {
@@ -85,11 +83,11 @@ fun HomeScreen(
 
                 else -> {
                     EmptyPage(
-                        title =  "Somting wrong"
+                        title = "Somting wrong"
                     )
                 }
             }
-        })
+        }
     }
 }
 

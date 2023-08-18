@@ -19,7 +19,7 @@ class HomeViewModel : ViewModel() {
     private fun observeAllDiaries() {
         viewModelScope.launch {
             MongoDB.getAllDiaries().collect { result ->
-                diaries.value = result
+                diaries.value = result // Update the diaries value with the collected result
             }
         }
     }
