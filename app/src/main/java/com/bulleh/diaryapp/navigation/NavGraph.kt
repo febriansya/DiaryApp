@@ -27,6 +27,7 @@ import com.bulleh.diaryapp.presentation.screens.home.HomeViewModel
 import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import com.bulleh.diaryapp.util.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -85,6 +86,12 @@ fun NavGraphBuilder.authenticationRoute(
         val loadingState by viewModel.loadingState
         val onTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
+
+        LaunchedEffect(key1 = Unit) {
+            onDataLoaded()
+        }
+
+
         AuthenticationScreen(
             loadingState = onTapState.opened,
             authenticated = authenticated,
@@ -122,6 +129,7 @@ fun NavGraphBuilder.homeRoute(
     navigateToAuth: () -> Unit,
     onDataLoaded: () -> Unit
 ) {
+
     composable(
         route = Screen.Home.route
     ) {
@@ -134,6 +142,14 @@ fun NavGraphBuilder.homeRoute(
         val scope = rememberCoroutineScope()
         var signOutDialogOpened by remember { mutableStateOf(false) }
         var deleteAllDialogOpened by remember { mutableStateOf(false) }
+
+
+        LaunchedEffect(key1 = diaries) {
+            if (diaries !is RequestState.Loading) {
+                onDataLoaded()
+            }
+        }
+
 
 
         HomeScreen(
