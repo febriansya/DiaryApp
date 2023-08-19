@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,7 +45,8 @@ fun Gallery(
 
     BoxWithConstraints(
         modifier = modifier
-    ){
+
+    ) {
         val numberOfVisibleImages = remember {
             derivedStateOf {
                 max(
@@ -58,7 +60,6 @@ fun Gallery(
                 images.size - numberOfVisibleImages.value
             }
         }
-
         Row {
             images.take(numberOfVisibleImages.value).forEach { image ->
                 AsyncImage(
@@ -69,6 +70,7 @@ fun Gallery(
                         .size(imageSize),
                     model = ImageRequest.Builder(LocalContext.current).data(image).crossfade(true)
                         .build(),
+                    contentScale = ContentScale.Crop,
                     contentDescription = "Gallery Image"
                 )
                 Spacer(modifier = modifier.width(spaceBetween))
