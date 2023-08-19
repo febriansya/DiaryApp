@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,9 +26,14 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.bulleh.diaryapp.R
 import com.bulleh.diaryapp.data.repository.Diaries
@@ -43,11 +49,23 @@ fun HomeScreen(
     oneMenuClicked: () -> Unit,
     navigateToWrite: () -> Unit
 ) {
+
+    var padding by remember {
+        mutableStateOf(PaddingValues())
+    }
+
     NavigationDrawer(drawerState = drawerState, onSignOutClicked = onSignOutClicked) {
         Scaffold(topBar = {
             HomeTopBar(oneMenuClicked)
         }, floatingActionButton = {
-            FloatingActionButton(onClick = navigateToWrite) {
+
+            FloatingActionButton(
+                modifier = Modifier.padding(
+                    end = padding
+                        .calculateEndPadding(LayoutDirection.Ltr)
+                ), onClick = navigateToWrite
+            ) {
+
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "New Diary Icon",
@@ -55,6 +73,7 @@ fun HomeScreen(
                 )
             }
         }) {
+            padding = it
             when (diaries) {
                 is RequestState.Success -> {
                     HomeContent(
