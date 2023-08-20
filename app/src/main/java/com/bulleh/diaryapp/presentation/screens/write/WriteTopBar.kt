@@ -62,7 +62,11 @@ fun WriteTopBar(
         },
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Icon Date Range")
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Icon Date Range",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             }
 
             if (selectedDiary != null) {

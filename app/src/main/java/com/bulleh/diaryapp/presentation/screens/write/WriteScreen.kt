@@ -6,16 +6,19 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.bulleh.diaryapp.model.Diary
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerState
 
+@OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WriteScreen(
+    pagerState: PagerState,
     onDelete: () -> Unit,
-    selectedDiary: Diary,
+    selectedDiary: Diary?,
     onBackPressed: () -> Unit
 ) {
     Scaffold(
@@ -31,7 +34,14 @@ fun WriteScreen(
             .statusBarsPadding()
             .navigationBarsPadding(),
         content = {
-
+            WriteContent(
+                pagerState = pagerState,
+                paddingValues = it,
+                onTitleChanged = {},
+                description = "",
+                onDescriptionChanged = {},
+                title = "",
+            )
         }
     )
 }

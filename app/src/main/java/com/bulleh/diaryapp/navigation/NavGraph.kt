@@ -29,6 +29,9 @@ import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.bulleh.diaryapp.util.RequestState
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -71,9 +74,10 @@ fun SetupNavGraph(
         /*
         * this code for write route
         * */
-        writeRoute(onBackPressed = {
-            navController.popBackStack()
-        })
+        writeRoute(
+            onBackPressed = {
+                navController.popBackStack()
+            })
 
     }
 }
@@ -187,9 +191,12 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 fun NavGraphBuilder.writeRoute(
+
     onBackPressed: () -> Unit
 ) {
+
     composable(
         route = Screen.Write.route,
         arguments = listOf(navArgument(name = WRITE_SCREEN_ARGUMENT_KEY) {
@@ -198,15 +205,16 @@ fun NavGraphBuilder.writeRoute(
             defaultValue = null
         })
     ) {
+        val pagerState = rememberPagerState()
+
         WriteScreen(
+            pagerState = pagerState,
             onBackPressed = onBackPressed,
-            selectedDiary = Diary().apply {
-                title = "test title"
-                description = "testing description"
-            },
+            selectedDiary = null,
             onDelete = {
 
             }
+
         )
     }
 }
