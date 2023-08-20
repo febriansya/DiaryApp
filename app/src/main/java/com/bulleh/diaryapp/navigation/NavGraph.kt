@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bulleh.diaryapp.data.repository.MongoDB
+import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
 import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
@@ -70,7 +71,7 @@ fun SetupNavGraph(
         /*
         * this code for write route
         * */
-        writeRoute(navigateBack = {
+        writeRoute(onBackPressed = {
             navController.popBackStack()
         })
 
@@ -187,7 +188,7 @@ fun NavGraphBuilder.homeRoute(
 }
 
 fun NavGraphBuilder.writeRoute(
-    navigateBack: () -> Unit
+    onBackPressed: () -> Unit
 ) {
     composable(
         route = Screen.Write.route,
@@ -197,7 +198,16 @@ fun NavGraphBuilder.writeRoute(
             defaultValue = null
         })
     ) {
-        WriteScreen()
+        WriteScreen(
+            onBackPressed = onBackPressed,
+            selectedDiary = Diary().apply {
+                title = "test title"
+                description = "testing description"
+            },
+            onDelete = {
+
+            }
+        )
     }
 }
 
