@@ -24,7 +24,8 @@ fun WriteScreen(
     moodName: () -> String,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onSaveClicked: (Diary) -> Unit
 ) {
 
     LaunchedEffect(key1 = uiState.mood) {
@@ -46,12 +47,14 @@ fun WriteScreen(
             .navigationBarsPadding(),
         content = {
             WriteContent(
+                uiState = uiState,
                 pagerState = pagerState,
                 paddingValues = it,
                 onTitleChanged = onTitleChanged,
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
                 title = uiState.title,
+                onSaveClicked = onSaveClicked
             )
         }
     )
