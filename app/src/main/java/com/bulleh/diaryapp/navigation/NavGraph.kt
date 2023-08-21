@@ -71,8 +71,8 @@ fun SetupNavGraph(
         }, onDataLoaded = onDataLoaded,
             navigateToWriteArgs = {
 //            pass id
-            navController.navigate(Screen.Write.passDiaryId(diaryId = it))
-        })
+                navController.navigate(Screen.Write.passDiaryId(diaryId = it))
+            })
 
         /*
         * this code for write route
@@ -212,17 +212,24 @@ fun NavGraphBuilder.writeRoute(
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
 
+
         LaunchedEffect(key1 = uiState) {
             Log.d("Select Diary", "${uiState.selectedDiaryId}")
         }
 
+
         WriteScreen(
+            uiState = uiState,
             pagerState = pagerState,
             onBackPressed = onBackPressed,
             selectedDiary = null,
-            onDelete = {
-
-            }
+            onTitleChanged = {
+                viewModel.setTitle(it)
+            },
+            onDescriptionChanged = {
+                viewModel.setDescription(it)
+            },
+            onDelete = {},
         )
     }
 }

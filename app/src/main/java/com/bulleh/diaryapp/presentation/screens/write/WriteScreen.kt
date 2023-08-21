@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 
@@ -16,11 +18,19 @@ import com.google.accompanist.pager.PagerState
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WriteScreen(
+    uiState: UiState,
     pagerState: PagerState,
     onDelete: () -> Unit,
     selectedDiary: Diary?,
+    onTitleChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
     onBackPressed: () -> Unit
 ) {
+
+    LaunchedEffect(key1 = uiState.mood) {
+        pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
+    }
+
     Scaffold(
         topBar = {
             WriteTopBar(
@@ -37,10 +47,10 @@ fun WriteScreen(
             WriteContent(
                 pagerState = pagerState,
                 paddingValues = it,
-                onTitleChanged = {},
-                description = "",
-                onDescriptionChanged = {},
-                title = "",
+                onTitleChanged = onTitleChanged,
+                description = uiState.description,
+                onDescriptionChanged = onDescriptionChanged,
+                title = uiState.title,
             )
         }
     )
