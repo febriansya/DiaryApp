@@ -44,6 +44,7 @@ class WriteViewModel(
                 )
 
                 if (diary is RequestState.Success) {
+                    setSelectedDiary(diary = diary.data)
                     setTitle(title = diary.data.title)
                     setDescription(description = diary.data.description)
                     setMood(mood = Mood.valueOf(diary.data.mood))
@@ -51,6 +52,11 @@ class WriteViewModel(
                 }
             }
         }
+    }
+
+
+    fun setSelectedDiary(diary: Diary) {
+        uiState = uiState.copy(selectedDiary = diary)
     }
 
     fun setTitle(title: String) {

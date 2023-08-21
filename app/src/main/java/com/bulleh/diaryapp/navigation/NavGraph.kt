@@ -6,6 +6,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bulleh.diaryapp.data.repository.MongoDB
 import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
 import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
@@ -211,18 +213,24 @@ fun NavGraphBuilder.writeRoute(
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
+        val pageNumber by remember {
+            derivedStateOf {
+                pagerState.currentPage
+            }
+        }
 
 
         LaunchedEffect(key1 = uiState) {
             Log.d("Select Diary", "${uiState.selectedDiaryId}")
         }
 
-
         WriteScreen(
+            moodName = {
+                Mood.values()[pageNumber].name
+            },
             uiState = uiState,
             pagerState = pagerState,
             onBackPressed = onBackPressed,
-            selectedDiary = null,
             onTitleChanged = {
                 viewModel.setTitle(it)
             },

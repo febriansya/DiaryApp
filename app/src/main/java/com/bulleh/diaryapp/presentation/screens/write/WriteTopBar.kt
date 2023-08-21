@@ -23,66 +23,92 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
+import com.bulleh.diaryapp.util.toInstant
+import okhttp3.internal.format
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WriteTopBar(
     selectedDiary: Diary?,
+    moodName: () -> String,
     onDeleteConfirmed: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    CenterAlignedTopAppBar(
-        navigationIcon = {
-            IconButton(onClick = onBackPressed) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back top bar")
-            }
-        },
-        title = {
-            Column {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Happy",
-                    style = TextStyle(
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "10 JAN 2023, 10:00 AM",
-                    style = TextStyle(
-                        fontSize = MaterialTheme.typography.bodySmall.fontSize
-                    ),
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Icon Date Range",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
 
-            if (selectedDiary != null) {
-                DeleteDiaryAction(
-                    selectedDiary = selectedDiary,
-                    onDeleteConfirmed = onDeleteConfirmed
+    val currentDate by remember { mutableStateOf(LocalDate.now()) }
+    val currentTime by remember { mutableStateOf(LocalTime.now()) }
+    val formatedDate = remember(key1 = currentDate) {
+        DateTimeFormatter.ofPattern("dd MMM yyyy").format(currentDate).uppercase()
+    }
+
+    val formatedTime = remember(key1 = currentTime) {
+        DateTimeFormatter.ofPattern("hh:mm:a").format(currentTime).uppercase()
+    }
+
+
+    val selectedDiaryDateTime = remember(selectedDiary) {
+        if (selectedDiary != null) {
+            SimpleDateFormat("dd MMM yyyy, hh:mm:a", Locale.getDefault()).format(
+                Date.from(
+                    selectedDiary?.date?.toInstant()
                 )
-            }
+            ).toUpperCase()
+        } else {
+            "Unknown"
         }
-    )
+    }
+
+
+    CenterAlignedTopAppBar(navigationIcon = {
+        IconButton(onClick = onBackPressed) {
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back top bar")
+        }
+    }, title = {
+        Column {
+            Text(
+                modifier = Modifier.fillMaxWidth(), text = moodName(), style = TextStyle(
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = FontWeight.Bold
+                ), textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = if (selectedDiary != null) selectedDiaryDateTime else "$formatedDate, $formatedTime",
+                style = TextStyle(
+                    fontSize = MaterialTheme.typography.bodySmall.fontSize
+                ),
+                textAlign = TextAlign.Center
+            )
+        }
+    }, actions = {
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Icon Date Range",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        if (selectedDiary != null) {
+            DeleteDiaryAction(
+                selectedDiary = selectedDiary, onDeleteConfirmed = onDeleteConfirmed
+            )
+        }
+    })
 }
 
 @Composable
 fun DeleteDiaryAction(
-    selectedDiary: Diary?,
-    onDeleteConfirmed: () -> Unit
+    selectedDiary: Diary?, onDeleteConfirmed: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var openDialog by remember { mutableStateOf(false) }

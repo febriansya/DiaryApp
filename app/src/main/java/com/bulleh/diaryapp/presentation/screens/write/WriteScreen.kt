@@ -21,7 +21,7 @@ fun WriteScreen(
     uiState: UiState,
     pagerState: PagerState,
     onDelete: () -> Unit,
-    selectedDiary: Diary?,
+    moodName: () -> String,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onBackPressed: () -> Unit
@@ -34,9 +34,10 @@ fun WriteScreen(
     Scaffold(
         topBar = {
             WriteTopBar(
+                moodName = moodName,
                 onBackPressed = onBackPressed,
-                selectedDiary = selectedDiary,
-                onDeleteConfirmed = onDelete
+                selectedDiary = uiState.selectedDiary,
+                onDeleteConfirmed = onDelete,
             )
         },
         modifier = Modifier
