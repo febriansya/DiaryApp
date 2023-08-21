@@ -11,6 +11,6 @@ sealed class Screen(val route: String) {
         "write_screen?$WRITE_SCREEN_ARGUMENT_KEY=" +
                 "{$WRITE_SCREEN_ARGUMENT_KEY}"
     ) {
-        fun passDiaryId(diaryId: String) = "write_screen?diaryId=$WRITE_SCREEN_ARGUMENT_KEY"
+        fun passDiaryId(diaryId: String) = "write_screen?diaryId=$diaryId"
     }
 }

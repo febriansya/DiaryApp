@@ -26,6 +26,7 @@ import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.bulleh.diaryapp.presentation.screens.home.HomeScreen
 import com.bulleh.diaryapp.presentation.screens.home.HomeViewModel
 import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
+import com.bulleh.diaryapp.presentation.screens.write.WriteViewModel
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.bulleh.diaryapp.util.RequestState
@@ -67,7 +68,9 @@ fun SetupNavGraph(
         }, navigateToAuth = {
             navController.popBackStack()
             navController.navigate(Screen.Authentication.route)
-        }, onDataLoaded = onDataLoaded, navigateToWriteArgs = {
+        }, onDataLoaded = onDataLoaded,
+            navigateToWriteArgs = {
+//            pass id
             navController.navigate(Screen.Write.passDiaryId(diaryId = it))
         })
 
@@ -156,7 +159,6 @@ fun NavGraphBuilder.homeRoute(
         }
 
 
-
         HomeScreen(
             diaries = diaries,
             drawerState = drawerState,
@@ -166,7 +168,8 @@ fun NavGraphBuilder.homeRoute(
                 scope.launch {
                     drawerState.open()
                 }
-            }, navigateToWrite = navigateToWrite
+            }, navigateToWrite = navigateToWrite,
+            navigateToWriteWithArgs = navigateToWriteArgs
         )
 
         LaunchedEffect(key1 = Unit) {
@@ -193,7 +196,6 @@ fun NavGraphBuilder.homeRoute(
 
 @OptIn(ExperimentalPagerApi::class)
 fun NavGraphBuilder.writeRoute(
-
     onBackPressed: () -> Unit
 ) {
 
@@ -205,7 +207,14 @@ fun NavGraphBuilder.writeRoute(
             defaultValue = null
         })
     ) {
+
+        val viewModel: WriteViewModel = viewModel()
+        val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
+
+        LaunchedEffect(key1 = uiState) {
+            Log.d("Select Diary", "${uiState.selectedDiaryId}")
+        }
 
         WriteScreen(
             pagerState = pagerState,
@@ -214,7 +223,6 @@ fun NavGraphBuilder.writeRoute(
             onDelete = {
 
             }
-
         )
     }
 }
