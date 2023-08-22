@@ -11,6 +11,7 @@ import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.bulleh.diaryapp.util.RequestState
+import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +26,20 @@ class WriteViewModel(
     init {
         getDiaryIdArgument()
         fetchSelectedDiary()
+    }
+
+    fun upsertDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (uiState.selectedDiaryId != null) {
+                updateDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+            } else {
+                insertDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+            }
+        }
     }
 
     private fun getDiaryIdArgument() {
@@ -48,7 +63,6 @@ class WriteViewModel(
                         setMood(mood = Mood.valueOf(diary.data.mood))
                     }
                 }
-
             }
         }
     }
@@ -70,7 +84,7 @@ class WriteViewModel(
         uiState = uiState.copy(mood = mood)
     }
 
-    fun insertDiary(
+     private suspend fun insertDiary(
         diary: Diary,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -89,6 +103,27 @@ class WriteViewModel(
         }
     }
 
+
+    private suspend fun updateDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+
+        val result = MongoDB.updateDiary(diary.apply {
+            _id = ObjectId.Companion.from(uiState.selectedDiaryId!!)
+            date = uiState.selectedDiary!!.date
+        })
+        if (result is RequestState.Success) {
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } else if (result is RequestState.Error) {
+            withContext(Dispatchers.Main) {
+                onError(result.error.message.toString())
+            }
+        }
+    }
 }
 
 data class UiState(

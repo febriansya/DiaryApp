@@ -239,7 +239,7 @@ fun NavGraphBuilder.writeRoute(
             },
             onDelete = {},
             onSaveClicked = {
-                viewModel.insertDiary(
+                viewModel.upsertDiary(
                     diary = it.apply {
                         mood = Mood.values()[pageNumber].name
                     },
