@@ -120,6 +120,13 @@ fun WriteTopBar(
                 currentDate = LocalDate.now()
                 currentTime = LocalTime.now()
                 dateTimeUpdate = false
+                onDateTimeUpdate(
+                    ZonedDateTime.of(
+                        currentDate,
+                        currentTime,
+                        ZoneId.systemDefault()
+                    )
+                )
             }) {
                 Icon(
                     imageVector = Icons.Default.Close,
@@ -129,7 +136,7 @@ fun WriteTopBar(
             }
         } else {
             IconButton(onClick = {
-             dateDialog.show()
+                dateDialog.show()
             }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
