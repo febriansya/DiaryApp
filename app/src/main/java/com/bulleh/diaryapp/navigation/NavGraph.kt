@@ -2,6 +2,7 @@ package com.bulleh.diaryapp.navigation
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -41,6 +43,7 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 
 @Composable
@@ -211,6 +214,7 @@ fun NavGraphBuilder.writeRoute(
     ) {
 
         val viewModel: WriteViewModel = viewModel()
+        val context = LocalContext.current
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
         val pageNumber by remember {
@@ -237,7 +241,17 @@ fun NavGraphBuilder.writeRoute(
             onDescriptionChanged = {
                 viewModel.setDescription(it)
             },
-            onDelete = {},
+            onDelete = {
+                viewModel.deleteDiary(
+                    onSuccess = {
+                        Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
+                        onBackPressed()
+                    },
+                    onError = {message ->
+                        Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            },
             onDateTimeUpdated = {
                 viewModel.updateDateTime(zonedDateTime = it)
             },
@@ -247,7 +261,9 @@ fun NavGraphBuilder.writeRoute(
                         mood = Mood.values()[pageNumber].name
                     },
                     onSuccess = { onBackPressed() },
-                    onError = {}
+                    onError = {message ->
+                        Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
+                    }
                 )
             }
         )
