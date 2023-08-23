@@ -11,17 +11,20 @@ import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.bulleh.diaryapp.util.RequestState
+import com.bulleh.diaryapp.util.toRealmInstant
 import io.realm.kotlin.types.ObjectId
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.ZonedDateTime
 
 class WriteViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var uiState by mutableStateOf(UiState())
+
 
     init {
         getDiaryIdArgument()
@@ -76,6 +79,10 @@ class WriteViewModel(
         uiState = uiState.copy(title = title)
     }
 
+    fun updateDateTime(zonedDateTime: ZonedDateTime) {
+        uiState = uiState.copy(updatedDateTime = zonedDateTime.toInstant().toRealmInstant())
+    }
+
     fun setDescription(description: String) {
         uiState = uiState.copy(description = description)
     }
@@ -84,13 +91,17 @@ class WriteViewModel(
         uiState = uiState.copy(mood = mood)
     }
 
-     private suspend fun insertDiary(
+    private suspend fun insertDiary(
         diary: Diary,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = MongoDB.insertDiary(diary = diary)
+            val result = MongoDB.insertDiary(diary = diary.apply {
+                if (uiState.updatedDateTime != null) {
+                    date = uiState.updatedDateTime!!
+                }
+            })
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
@@ -112,7 +123,12 @@ class WriteViewModel(
 
         val result = MongoDB.updateDiary(diary.apply {
             _id = ObjectId.Companion.from(uiState.selectedDiaryId!!)
-            date = uiState.selectedDiary!!.date
+            date = if (uiState.updatedDateTime != null) {
+                uiState.updatedDateTime!!
+            } else {
+                uiState.selectedDiary!!.date
+            }
+
         })
         if (result is RequestState.Success) {
             withContext(Dispatchers.Main) {

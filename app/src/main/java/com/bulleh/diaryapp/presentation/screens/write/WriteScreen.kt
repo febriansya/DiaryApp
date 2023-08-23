@@ -13,6 +13,7 @@ import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import java.time.ZonedDateTime
 
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -24,6 +25,7 @@ fun WriteScreen(
     moodName: () -> String,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
+    onDateTimeUpdated: (ZonedDateTime) -> Unit,
     onBackPressed: () -> Unit,
     onSaveClicked: (Diary) -> Unit
 ) {
@@ -39,6 +41,7 @@ fun WriteScreen(
                 onBackPressed = onBackPressed,
                 selectedDiary = uiState.selectedDiary,
                 onDeleteConfirmed = onDelete,
+                onDateTimeUpdate = onDateTimeUpdated
             )
         },
         modifier = Modifier
