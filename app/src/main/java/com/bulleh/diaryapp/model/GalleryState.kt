@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 @Composable
 fun rememberGalleryState(): GalleryState {
     return remember { GalleryState() }
+
 }
 
 class GalleryState {
@@ -21,6 +22,10 @@ class GalleryState {
     fun removeImage(galleryImage: GalleryImage) {
         images.remove(galleryImage)
         imagesToBeDeleted.add(galleryImage)
+    }
+
+    fun clearImagesToBeDeleted() {
+        imagesToBeDeleted.clear()
     }
 }
 

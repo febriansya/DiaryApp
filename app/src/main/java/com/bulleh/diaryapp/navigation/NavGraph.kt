@@ -22,7 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bulleh.diaryapp.data.repository.MongoDB
-import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.GalleryImage
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
@@ -33,9 +33,9 @@ import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
 import com.bulleh.diaryapp.presentation.screens.write.WriteViewModel
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import com.bulleh.diaryapp.util.RequestState
+import com.bulleh.diaryapp.model.RequestState
+import com.bulleh.diaryapp.model.rememberGalleryState
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
@@ -43,7 +43,6 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 
 
 @Composable
@@ -217,6 +216,7 @@ fun NavGraphBuilder.writeRoute(
         val context = LocalContext.current
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
+        val galleryState = rememberGalleryState()
         val pageNumber by remember {
             derivedStateOf {
                 pagerState.currentPage
@@ -247,7 +247,7 @@ fun NavGraphBuilder.writeRoute(
                         Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
                         onBackPressed()
                     },
-                    onError = {message ->
+                    onError = { message ->
                         Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
                     }
                 )
@@ -261,11 +261,21 @@ fun NavGraphBuilder.writeRoute(
                         mood = Mood.values()[pageNumber].name
                     },
                     onSuccess = { onBackPressed() },
-                    onError = {message ->
+                    onError = { message ->
                         Toast.makeText(context, "$message", Toast.LENGTH_SHORT).show()
                     }
                 )
+            },
+            galleryState = galleryState,
+            onImageSelected = {
+                galleryState.addImage(
+                    GalleryImage(
+                        image = it,
+                        remoteImagePath = ""
+                    )
+                )
             }
+
         )
     }
 }

@@ -10,14 +10,13 @@ import com.bulleh.diaryapp.data.repository.MongoDB
 import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import com.bulleh.diaryapp.util.RequestState
+import com.bulleh.diaryapp.model.RequestState
 import com.bulleh.diaryapp.util.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.mongodb.kbson.ObjectId
 import java.time.ZonedDateTime
 
 class WriteViewModel(

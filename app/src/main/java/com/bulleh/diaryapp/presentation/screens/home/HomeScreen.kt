@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.bulleh.diaryapp.R
 import com.bulleh.diaryapp.data.repository.Diaries
-import com.bulleh.diaryapp.util.RequestState
+import com.bulleh.diaryapp.model.RequestState
 
 
 @OptIn(ExperimentalMaterial3Api::class)

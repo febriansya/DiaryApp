@@ -1,6 +1,7 @@
 package com.bulleh.diaryapp.presentation.screens.write
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.GalleryState
 import com.bulleh.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -21,13 +23,15 @@ import java.time.ZonedDateTime
 fun WriteScreen(
     uiState: UiState,
     pagerState: PagerState,
+    galleryState: GalleryState,
     onDelete: () -> Unit,
     moodName: () -> String,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDateTimeUpdated: (ZonedDateTime) -> Unit,
     onBackPressed: () -> Unit,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    onImageSelected:(Uri) -> Unit,
 ) {
 
     LaunchedEffect(key1 = uiState.mood) {
@@ -57,7 +61,9 @@ fun WriteScreen(
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
                 title = uiState.title,
-                onSaveClicked = onSaveClicked
+                galleryState =galleryState,
+                onSaveClicked = onSaveClicked,
+                onImageSelected = onImageSelected
             )
         }
     )

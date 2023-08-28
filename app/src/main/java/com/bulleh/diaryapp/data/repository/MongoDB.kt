@@ -3,10 +3,9 @@
 package com.bulleh.diaryapp.data.repository
 
 import android.security.keystore.UserNotAuthenticatedException
-import android.widget.Toast
 import com.bulleh.diaryapp.model.Diary
 import com.bulleh.diaryapp.util.Constants.APP_ID
-import com.bulleh.diaryapp.util.RequestState
+import com.bulleh.diaryapp.model.RequestState
 import com.bulleh.diaryapp.util.toInstant
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query

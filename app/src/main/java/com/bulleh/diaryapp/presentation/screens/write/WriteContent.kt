@@ -1,5 +1,6 @@
 package com.bulleh.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.GalleryState
 import com.bulleh.diaryapp.model.Mood
+import com.bulleh.diaryapp.presentation.components.GalleryUploader
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -48,11 +51,13 @@ fun WriteContent(
     uiState: UiState,
     pagerState: PagerState,
     paddingValues: PaddingValues,
+    galleryState: GalleryState,
     onTitleChanged: (String) -> Unit,
     description: String,
     title: String,
     onDescriptionChanged: (String) -> Unit,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    onImageSelected: (Uri) -> Unit
 
 ) {
     val scope = rememberCoroutineScope()
@@ -150,6 +155,15 @@ fun WriteContent(
             )
         }
         Column(verticalArrangement = Arrangement.Bottom) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            GalleryUploader(
+                galleryState = galleryState,
+                onAddClicked = { focusManager.clearFocus() },
+                onImageSelect = onImageSelected,
+                onImageClicked = {},
+            )
+
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier
