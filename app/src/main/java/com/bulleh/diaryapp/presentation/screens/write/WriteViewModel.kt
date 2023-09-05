@@ -1,5 +1,6 @@
 package com.bulleh.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,10 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bulleh.diaryapp.data.repository.MongoDB
 import com.bulleh.diaryapp.model.Diary
+import com.bulleh.diaryapp.model.GalleryImage
+import com.bulleh.diaryapp.model.GalleryState
 import com.bulleh.diaryapp.model.Mood
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.bulleh.diaryapp.model.RequestState
 import com.bulleh.diaryapp.util.toRealmInstant
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -20,11 +25,15 @@ import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 
 class WriteViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(UiState())
 
+    val galleryState = GalleryState()
+
+
+    var uiState by mutableStateOf(UiState())
 
     init {
         getDiaryIdArgument()
@@ -118,6 +127,30 @@ class WriteViewModel(
         }
     }
 
+    fun addImage(image: Uri, imageType: String) {
+        val remoteImagePath = "images/${FirebaseAuth.getInstance().currentUser?.uid}" +
+                "${image.lastPathSegment}-${System.currentTimeMillis()}.$imageType "
+        galleryState.addImage(
+            GalleryImage(image = image, remoteImagePath = remoteImagePath)
+        )
+    }
+
+    private fun uploadImagesToFirebase(){
+        val storage  = FirebaseStorage.getInstance().reference
+        galleryState.images.forEach { galleryImage ->
+            val imagePath = storage.child(galleryImage.remoteImagePath)
+            imagePath.putFile(galleryImage.image)
+                .addOnProgressListener {
+                    val sessionUri = it.uploadSessionUri
+                    if (sessionUri!= null){
+                        viewModelScope.launch (Dispatchers.IO){
+
+                        }
+                    }
+                }
+        }
+    }
+
     fun deleteDiary(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -146,7 +179,6 @@ class WriteViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-
         val result = MongoDB.updateDiary(diary.apply {
             _id = io.realm.kotlin.types.ObjectId.from(uiState.selectedDiaryId!!)
             date = if (uiState.updatedDateTime != null) {

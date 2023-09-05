@@ -103,7 +103,6 @@ fun NavGraphBuilder.authenticationRoute(
             onDataLoaded()
         }
 
-
         AuthenticationScreen(
             loadingState = onTapState.opened,
             authenticated = authenticated,
@@ -218,8 +217,8 @@ fun NavGraphBuilder.writeRoute(
         val viewModel: WriteViewModel = viewModel()
         val context = LocalContext.current
         val uiState = viewModel.uiState
+        val galleryState = viewModel.galleryState
         val pagerState = rememberPagerState()
-        val galleryState = rememberGalleryState()
         val pageNumber by remember {
             derivedStateOf {
                 pagerState.currentPage
@@ -271,14 +270,12 @@ fun NavGraphBuilder.writeRoute(
             },
             galleryState = galleryState,
             onImageSelected = {
-                galleryState.addImage(
-                    GalleryImage(
-                        image = it,
-                        remoteImagePath = ""
-                    )
+                val type = context.contentResolver.getType(it)?.split("/")?.last() ?: "jpg"
+                viewModel.addImage(
+                    image = it,
+                    imageType = type
                 )
-            }
-
+            },
         )
     }
 }

@@ -23,8 +23,8 @@ import java.time.ZonedDateTime
 fun WriteScreen(
     uiState: UiState,
     pagerState: PagerState,
-    galleryState: GalleryState,
     onDelete: () -> Unit,
+    galleryState: GalleryState,
     moodName: () -> String,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
@@ -61,9 +61,9 @@ fun WriteScreen(
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
                 title = uiState.title,
-                galleryState =galleryState,
                 onSaveClicked = onSaveClicked,
-                onImageSelected = onImageSelected
+                onImageSelected = onImageSelected,
+                galleryState = galleryState
             )
         }
     )
