@@ -22,8 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bulleh.diaryapp.data.repository.MongoDB
-import com.bulleh.diaryapp.model.GalleryImage
 import com.bulleh.diaryapp.model.Mood
+import com.bulleh.diaryapp.model.RequestState
 import com.bulleh.diaryapp.presentation.components.DisplayAlertDialog
 import com.bulleh.diaryapp.presentation.screens.auth.AuthViewModel
 import com.bulleh.diaryapp.presentation.screens.auth.AuthenticationScreen
@@ -33,8 +33,6 @@ import com.bulleh.diaryapp.presentation.screens.write.WriteScreen
 import com.bulleh.diaryapp.presentation.screens.write.WriteViewModel
 import com.bulleh.diaryapp.util.Constants.APP_ID
 import com.bulleh.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import com.bulleh.diaryapp.model.RequestState
-import com.bulleh.diaryapp.model.rememberGalleryState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -271,10 +269,7 @@ fun NavGraphBuilder.writeRoute(
             galleryState = galleryState,
             onImageSelected = {
                 val type = context.contentResolver.getType(it)?.split("/")?.last() ?: "jpg"
-                viewModel.addImage(
-                    image = it,
-                    imageType = type
-                )
+                viewModel.addImage(image = it, imageType = type)
             },
         )
     }

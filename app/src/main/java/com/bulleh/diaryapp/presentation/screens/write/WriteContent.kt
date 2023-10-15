@@ -43,6 +43,7 @@ import com.bulleh.diaryapp.presentation.components.GalleryUploader
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
@@ -161,7 +162,9 @@ fun WriteContent(
                 galleryState = galleryState,
                 onAddClicked = { focusManager.clearFocus() },
                 onImageSelect = onImageSelected,
-                onImageClicked = {},
+                onImageClicked = {
+
+                },
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -174,6 +177,7 @@ fun WriteContent(
                         onSaveClicked(Diary().apply {
                             this.title = uiState.title
                             this.description = uiState.description
+                            this.images = galleryState.images.map { it.remoteImagePath }.toRealmList()
                         })
                     } else {
                         Toast.makeText(context, "Fields cannot be Empty!.", Toast.LENGTH_SHORT)
